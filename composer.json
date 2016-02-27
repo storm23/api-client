@@ -1,6 +1,6 @@
 {
-    "name": "catalisio/email-hunter-php",
-    "description": "Email Hunter PHP API client",
+    "name": "catalisio/api-client-php",
+    "description": "PHP API client",
     "type": "Library",
     "require": {
         "php": ">=5.5.0",
