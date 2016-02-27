@@ -1,4 +1,4 @@
 vendor/
 tests/
 .DS_STORE
-*.lock
+composer.lock
