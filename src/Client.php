@@ -3,22 +3,24 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2016-02-27 17:24:44
+ * @Last Modified time: 2016-02-27 18:12:07
  */
 
 namespace Catalisio\APIClient;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleClient;
 
 abstract class Client {
 
 	private $httpClient;
 	private $constantParams;
+	private $endPoint;
 
 	public function __construct($constantParams) {
 
-		$this->httpClient = new Client();
+		$this->httpClient = new GuzzleClient();
 		$this->constantParams = $constantParams;
+		$this->endPoint = $this->getEndPoint();
 	}
 
 	abstract protected function getEndPoint();
@@ -41,7 +43,7 @@ abstract class Client {
 		return json_decode($body, true);
 	}
 
-	private function makeURL($url, $params, $formParams) {
+	private function makeURL($url, $params) {
 
 		$params = array_merge($params, $this->constantParams);
 
