@@ -15,5 +15,10 @@
             "name": "Julien Goldberg",
             "email": "julien@catalisio.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "catalisio\\APIClient": "src/"
+        }
+    },
 }

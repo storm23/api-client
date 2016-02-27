@@ -3,7 +3,7 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2016-02-27 17:05:24
+ * @Last Modified time: 2016-02-27 17:24:44
  */
 
 namespace Catalisio\APIClient;
@@ -21,7 +21,7 @@ abstract class Client {
 		$this->constantParams = $constantParams;
 	}
 
-	abstract protected function getEndPoint($endPoint);
+	abstract protected function getEndPoint();
 
 	protected function get($url, $params) {
 
