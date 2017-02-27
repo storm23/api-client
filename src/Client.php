@@ -3,7 +3,7 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-02-09 16:06:08
+ * @Last Modified time: 2017-02-27 13:52:54
  */
 
 namespace Catalisio\APIClient;
@@ -43,7 +43,7 @@ abstract class Client {
 		return json_decode($body, true);
 	}
 
-	private function makeURL($url, $params) {
+	protected function makeURL($url, $params) {
 
 		$params = array_merge($params, $this->constantParams);
 
