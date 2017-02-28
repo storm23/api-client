@@ -3,7 +3,7 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-02-28 11:17:58
+ * @Last Modified time: 2017-02-28 14:23:56
  */
 
 namespace Catalisio\APIClient;
@@ -38,6 +38,15 @@ abstract class Client {
 
 		$url = $this->makeURL($url, $params);
 		$response = $this->httpClient->put($url, [ 'form_params' => $formParams ]);
+		$body = $response->getBody();
+
+		return json_decode($body, true);
+	}
+
+	protected function patch($url, $params, $formParams) {
+
+		$url = $this->makeURL($url, $params);
+		$response = $this->httpClient->patch($url, [ 'form_params' => $formParams ]);
 		$body = $response->getBody();
 
 		return json_decode($body, true);
