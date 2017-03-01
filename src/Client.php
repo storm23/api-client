@@ -3,7 +3,7 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-03-01 15:41:55
+ * @Last Modified time: 2017-03-01 15:52:17
  */
 
 namespace Catalisio\APIClient;
@@ -112,7 +112,7 @@ abstract class Client
 		return $this->makeCall('DELETE', $url, $queryParams);
 	}
 
-	private function makeURL($url, array $queryParams) 
+	protected function makeURL($url, array $queryParams) 
 	{
 		if (isset($this->constantParams)) {
 
