@@ -3,74 +3,128 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-02-28 14:23:56
+ * @Last Modified time: 2017-03-01 15:41:55
  */
 
 namespace Catalisio\APIClient;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7\Response;
 
-abstract class Client {
-
+abstract class Client 
+{
 	private $httpClient;
 	private $constantParams;
-	private $endPoint;
+	
+	public $errors;
+	public $hasError;
+	public $errorCode; 
 
-	public function __construct($constantParams) {
+	public function __construct() 
+	{
+		$headers = ['headers' => ['Accept' => 'application/json']];
+		$this->httpClient = new GuzzleClient($headers);
 
-		$this->httpClient = new GuzzleClient();
-		$this->constantParams = $constantParams;
-		$this->endPoint = $this->getEndPoint();
+		$this->initError();
 	}
 
 	abstract protected function getEndPoint();
 
-	protected function get($url, $params) {
-
-		$url = $this->makeURL($url, $params);
-		$response = $this->httpClient->get($url);
-		$body = $response->getBody();
-
-		return json_decode($body, true);
+	public function setConstantParams(array $constantParams)
+	{
+		$this->constantParams = $constantParams;
 	}
 
-	protected function put($url, $params, $formParams) {
-
-		$url = $this->makeURL($url, $params);
-		$response = $this->httpClient->put($url, [ 'form_params' => $formParams ]);
-		$body = $response->getBody();
-
-		return json_decode($body, true);
+	private function initError()
+	{
+		$this->errors = null;
+		$this->hasError = false;
+		$this->errorCode = null; 
 	}
 
-	protected function patch($url, $params, $formParams) {
+	private function makeCall($verb, $url, array $queryParams = null, array $formParams = null)
+	{
+		$this->initError();
 
-		$url = $this->makeURL($url, $params);
-		$response = $this->httpClient->patch($url, [ 'form_params' => $formParams ]);
-		$body = $response->getBody();
+		$url = $this->makeURL($url, $queryParams);
+		$params = [];
+		if (isset($formParams)) {
 
-		return json_decode($body, true);
+			$params['json'] = $formParams;
+		}
+
+		try {
+
+			$response = $this->httpClient->request($verb, $url, $params);
+			$response = $this->getBody($response);
+		}
+		catch (TransferException $e) {
+
+			$errorResponse = $e->getResponse();
+			$this->errorCode = $errorResponse->getStatusCode();
+			$this->hasError = true;
+			$this->errors = $this->getBody($errorResponse);
+			$response = false;
+		}
+
+		return $response;
 	}
 
-	protected function post($url, $params, $formParams) {
-
-		$url = $this->makeURL($url, $params);
-		$response = $this->httpClient->post($url, [ 'form_params' => $formParams ]);
+	private function getBody(Response $response)
+	{
 		$body = $response->getBody();
 
-		return json_decode($body, true);
+		try {
+
+			$jsonBody = json_decode($body, true);
+		}
+		catch (\Exception $e) {
+
+			throw new \Exception('Response is not json format');
+		}
+
+		return $jsonBody;
 	}
 
-	protected function makeURL($url, $params) {
+	protected function get($url, array $queryParams = null) 
+	{
+		return $this->makeCall('GET', $url, $queryParams);
+	}
 
-		$params = array_merge($params, $this->constantParams);
+	protected function post($url, array $formParams, array $queryParams = null) 
+	{
+		return $this->makeCall('POST', $url, $queryParams, $formParams);
+	}
 
-		if (count($params) > 0)	{
+	protected function put($url, array $formParams, array $queryParams = null) 
+	{
+		return $this->makeCall('PUT', $url, $queryParams, $formParams);
+	}
+
+	protected function patch($url, array $formParams, array $queryParams = null) 
+	{
+		return $this->makeCall('PATCH', $url, $queryParams, $formParams);
+	}
+
+	protected function delete($url, array $queryParams = null) 
+	{
+		return $this->makeCall('DELETE', $url, $queryParams);
+	}
+
+	private function makeURL($url, array $queryParams) 
+	{
+		if (isset($this->constantParams)) {
+
+			$queryParams = array_merge($queryParams, $this->constantParams);
+		}
+		
+		if (count($queryParams) > 0)	{
 
 			$queryString = '?'.implode('&', array_map(
    														function ($v, $k) { return $k . '=' . $v; }, 
-    													$params, 
-    													array_keys($params)
+    													$queryParams, 
+    													array_keys($queryParams)
 			));
 		}
 		else {
@@ -78,6 +132,6 @@ abstract class Client {
 			$queryString = '';
 		}
 
-		return sprintf("%s%s?%s", $this->endPoint, $url, $queryString);
+		return sprintf("%s%s?%s", $this->getEndPoint(), $url, $queryString);
 	}
 }
