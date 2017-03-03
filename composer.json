@@ -1,5 +1,5 @@
 {
-    "name": "catalisio/api-client-php",
+    "name": "storm23/api-client-php",
     "description": "PHP API client",
     "type": "Library",
     "require": {
@@ -13,7 +13,7 @@
     "authors": [
         {
             "name": "Julien Goldberg",
-            "email": "julien@catalisio.com"
+            "email": "julien.goldberg@gmail.com"
         }
     ],
     "autoload": {
