@@ -3,7 +3,7 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-03-01 15:52:17
+ * @Last Modified time: 2017-03-03 12:18:51
  */
 
 namespace Catalisio\APIClient;
@@ -121,7 +121,7 @@ abstract class Client
 		
 		if (count($queryParams) > 0)	{
 
-			$queryString = '?'.implode('&', array_map(
+			$queryString = implode('&', array_map(
    														function ($v, $k) { return $k . '=' . $v; }, 
     													$queryParams, 
     													array_keys($queryParams)
