@@ -3,13 +3,12 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-03-03 14:56:18
+ * @Last Modified time: 2017-03-03 15:16:29
  */
 
 namespace Catalisio\APIClient;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Response;
 
@@ -59,13 +58,6 @@ abstract class Client
 
 			$response = $this->httpClient->request($verb, $url, $params);
 			$response = $this->getBody($response);
-		}
-		catch (RequestException $e) {
-
-			$this->errorCode = 500;
-			$this->hasError = true;
-			$this->errors = $e->getMessage();
-			$response = false;
 		}
 		catch (TransferException $e) {
 
@@ -122,12 +114,17 @@ abstract class Client
 
 	protected function makeURL($url, array $queryParams = null) 
 	{
+		if (!isset($queryParams)) {
+
+			$queryParams = [];
+		}
+
 		if (isset($this->constantParams)) {
 
 			$queryParams = array_merge($queryParams, $this->constantParams);
 		}
 		
-		if (isset($queryParams) && count($queryParams) > 0)	{
+		if (count($queryParams) > 0)	{
 
 			$queryString = '?' . implode('&', array_map(
    														function ($v, $k) { return $k . '=' . $v; }, 
