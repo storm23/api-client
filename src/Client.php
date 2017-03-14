@@ -3,13 +3,14 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-03-03 15:16:29
+ * @Last Modified time: 2017-03-08 16:42:44
  */
 
 namespace Catalisio\APIClient;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 
 abstract class Client 
@@ -58,6 +59,13 @@ abstract class Client
 
 			$response = $this->httpClient->request($verb, $url, $params);
 			$response = $this->getBody($response);
+		}
+		catch (RequestException $e) {
+
+			$this->errorCode = 500;
+			$this->hasError = true;
+			$this->errors = $e->getMessage();
+			$response = false;
 		}
 		catch (TransferException $e) {
 
