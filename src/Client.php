@@ -3,7 +3,7 @@
  * @Author: catalisio
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-03-08 16:42:44
+ * @Last Modified time: 2017-03-22 16:49:07
  */
 
 namespace Catalisio\APIClient;
@@ -11,26 +11,25 @@ namespace Catalisio\APIClient;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\Response;
 
-abstract class Client 
+class Client 
 {
 	private $httpClient;
 	private $constantParams;
-	
+	private $endpoint;
+		
 	public $errors;
 	public $hasError;
 	public $errorCode; 
 
-	public function __construct() 
+	public function __construct($endpoint) 
 	{
+		$this->endpoint = $endpoint;
 		$headers = ['headers' => ['Accept' => 'application/json']];
 		$this->httpClient = new GuzzleClient($headers);
 
 		$this->initError();
 	}
-
-	abstract protected function getEndPoint();
 
 	public function setConstantParams(array $constantParams)
 	{
@@ -58,7 +57,7 @@ abstract class Client
 		try {
 
 			$response = $this->httpClient->request($verb, $url, $params);
-			$response = $this->getBody($response);
+			//$response = $this->getBody($response);
 		}
 		catch (RequestException $e) {
 
@@ -79,48 +78,32 @@ abstract class Client
 		return $response;
 	}
 
-	private function getBody(Response $response)
-	{
-		$body = $response->getBody();
-
-		try {
-
-			$jsonBody = json_decode($body, true);
-		}
-		catch (\Exception $e) {
-
-			throw new \Exception('Response is not json format');
-		}
-
-		return $jsonBody;
-	}
-
-	protected function get($url, array $queryParams = null) 
+	public function get($url, array $queryParams = null) 
 	{
 		return $this->makeCall('GET', $url, $queryParams);
 	}
 
-	protected function post($url, array $formParams, array $queryParams = null) 
+	public function post($url, array $formParams, array $queryParams = null) 
 	{
 		return $this->makeCall('POST', $url, $queryParams, $formParams);
 	}
 
-	protected function put($url, array $formParams, array $queryParams = null) 
+	public function put($url, array $formParams, array $queryParams = null) 
 	{
 		return $this->makeCall('PUT', $url, $queryParams, $formParams);
 	}
 
-	protected function patch($url, array $formParams, array $queryParams = null) 
+	public function patch($url, array $formParams, array $queryParams = null) 
 	{
 		return $this->makeCall('PATCH', $url, $queryParams, $formParams);
 	}
 
-	protected function delete($url, array $queryParams = null) 
+	public function delete($url, array $queryParams = null) 
 	{
 		return $this->makeCall('DELETE', $url, $queryParams);
 	}
 
-	protected function makeURL($url, array $queryParams = null) 
+	public function makeURL($url, array $queryParams = null) 
 	{
 		if (!isset($queryParams)) {
 
@@ -145,6 +128,6 @@ abstract class Client
 			$queryString = '';
 		}
 
-		return sprintf("%s%s%s", $this->getEndPoint(), $url, $queryString);
+		return sprintf("%s%s%s", $this->endpoint, $url, $queryString);
 	}
 }
