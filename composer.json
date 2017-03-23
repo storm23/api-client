@@ -18,12 +18,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Catalisio\\APIClient\\": "src/"
+            "APIClient\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Catalisio\\APIClient\\Tests\\": "tests/"
+            "APIClient\\Tests\\": "tests/"
         }
     }
 }

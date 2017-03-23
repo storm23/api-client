@@ -1,12 +1,12 @@
 <?php
 /**
- * @Author: catalisio
+ * @Author: Julien Goldberg
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-03-22 16:49:07
+ * @Last Modified time: 2017-03-23 11:37:31
  */
 
-namespace Catalisio\APIClient;
+namespace APIClient;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
@@ -20,7 +20,6 @@ class Client
 		
 	public $errors;
 	public $hasError;
-	public $errorCode; 
 
 	public function __construct($endpoint) 
 	{
@@ -38,7 +37,7 @@ class Client
 
 	private function initError()
 	{
-		$this->errors = null;
+		$this->errors = [];
 		$this->hasError = false;
 		$this->errorCode = null; 
 	}
@@ -57,25 +56,28 @@ class Client
 		try {
 
 			$response = $this->httpClient->request($verb, $url, $params);
-			//$response = $this->getBody($response);
 		}
 		catch (RequestException $e) {
 
-			$this->errorCode = 500;
-			$this->hasError = true;
-			$this->errors = $e->getMessage();
+			$this->addError(500, $e->getMessage());
 			$response = false;
 		}
 		catch (TransferException $e) {
 
-			$errorResponse = $e->getResponse();
-			$this->errorCode = $errorResponse->getStatusCode();
-			$this->hasError = true;
-			$this->errors = $this->getBody($errorResponse);
+			$this->addError($errorResponse->getStatusCode(), $e->getResponse());
 			$response = false;
 		}
 
 		return $response;
+	}
+
+	private function addError($errorCode, $errorMessage)
+	{
+		$this->hasError = true;
+		$this->errors[] = [
+			'code' => $errorCode,
+			'message' => $errorMessage
+		];
 	}
 
 	public function get($url, array $queryParams = null) 
