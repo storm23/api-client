@@ -3,7 +3,7 @@
  * @Author: Julien Goldberg
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-03-23 11:37:31
+ * @Last Modified time: 2017-05-12 14:47:59
  */
 
 namespace APIClient;
@@ -21,11 +21,12 @@ class Client
 	public $errors;
 	public $hasError;
 
-	public function __construct($endpoint) 
+	public function __construct($endpoint, $verifySSL = true) 
 	{
 		$this->endpoint = $endpoint;
 		$headers = ['headers' => ['Accept' => 'application/json']];
 		$this->httpClient = new GuzzleClient($headers);
+		$this->httpClient->setDefaultOption('verify', $verifySSL);
 
 		$this->initError();
 	}
