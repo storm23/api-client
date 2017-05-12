@@ -3,7 +3,7 @@
  * @Author: Julien Goldberg
  * @Date:   2016-02-27 16:54:30
  * @Last Modified by:   Julien Goldberg
- * @Last Modified time: 2017-05-12 14:47:59
+ * @Last Modified time: 2017-05-12 15:52:02
  */
 
 namespace APIClient;
@@ -17,6 +17,7 @@ class Client
 	private $httpClient;
 	private $constantParams;
 	private $endpoint;
+	private $verifySSL;
 		
 	public $errors;
 	public $hasError;
@@ -26,7 +27,7 @@ class Client
 		$this->endpoint = $endpoint;
 		$headers = ['headers' => ['Accept' => 'application/json']];
 		$this->httpClient = new GuzzleClient($headers);
-		$this->httpClient->setDefaultOption('verify', $verifySSL);
+		$this->verifySSL = $verifySSL;
 
 		$this->initError();
 	}
@@ -54,6 +55,8 @@ class Client
 			$params['json'] = $formParams;
 		}
 
+		$params = $this->addParams($params);
+
 		try {
 
 			$response = $this->httpClient->request($verb, $url, $params);
@@ -70,6 +73,16 @@ class Client
 		}
 
 		return $response;
+	}
+
+	private function addParams(array $params)
+	{
+		if (!$this->verifySSL) {
+
+			$params['verify'] = false;
+		}
+
+		return $params;
 	}
 
 	private function addError($errorCode, $errorMessage)
