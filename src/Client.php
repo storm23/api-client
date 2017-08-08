@@ -12,17 +12,17 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Exception\RequestException;
 
-class Client 
+class Client
 {
 	private $httpClient;
 	private $constantParams;
 	private $endpoint;
 	private $verifySSL;
-		
+
 	public $errors;
 	public $hasError;
 
-	public function __construct($endpoint, $verifySSL = true) 
+	public function __construct($endpoint, $verifySSL = true)
 	{
 		$this->endpoint = $endpoint;
 		$headers = ['headers' => ['Accept' => 'application/json']];
@@ -41,7 +41,7 @@ class Client
 	{
 		$this->errors = [];
 		$this->hasError = false;
-		$this->errorCode = null; 
+		$this->errorCode = null;
 	}
 
 	private function makeCall($verb, $url, array $queryParams = null, array $formParams = null)
@@ -63,12 +63,12 @@ class Client
 		}
 		catch (RequestException $e) {
 
-			$this->addError(500, $e->getMessage());
+            $this->addError($e->getResponse()->getStatusCode(), $e->getResponse()->getBody()->getContents());
 			$response = false;
 		}
 		catch (TransferException $e) {
 
-			$this->addError($errorResponse->getStatusCode(), $e->getResponse());
+			$this->addError($e->getStatusCode(), $e->getResponse());
 			$response = false;
 		}
 
@@ -94,32 +94,32 @@ class Client
 		];
 	}
 
-	public function get($url, array $queryParams = null) 
+	public function get($url, array $queryParams = null)
 	{
 		return $this->makeCall('GET', $url, $queryParams);
 	}
 
-	public function post($url, array $formParams, array $queryParams = null) 
+	public function post($url, array $formParams, array $queryParams = null)
 	{
 		return $this->makeCall('POST', $url, $queryParams, $formParams);
 	}
 
-	public function put($url, array $formParams, array $queryParams = null) 
+	public function put($url, array $formParams, array $queryParams = null)
 	{
 		return $this->makeCall('PUT', $url, $queryParams, $formParams);
 	}
 
-	public function patch($url, array $formParams, array $queryParams = null) 
+	public function patch($url, array $formParams, array $queryParams = null)
 	{
 		return $this->makeCall('PATCH', $url, $queryParams, $formParams);
 	}
 
-	public function delete($url, array $queryParams = null) 
+	public function delete($url, array $queryParams = null)
 	{
 		return $this->makeCall('DELETE', $url, $queryParams);
 	}
 
-	public function makeURL($url, array $queryParams = null) 
+	public function makeURL($url, array $queryParams = null)
 	{
 		if (!isset($queryParams)) {
 
@@ -130,12 +130,12 @@ class Client
 
 			$queryParams = array_merge($queryParams, $this->constantParams);
 		}
-		
+
 		if (count($queryParams) > 0)	{
 
 			$queryString = '?' . implode('&', array_map(
-   														function ($v, $k) { return $k . '=' . $v; }, 
-    													$queryParams, 
+   														function ($v, $k) { return $k . '=' . $v; },
+    													$queryParams,
     													array_keys($queryParams)
 			));
 		}
