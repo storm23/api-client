@@ -32,6 +32,11 @@ class Client
 		$this->initError();
 	}
 
+    public function setConstantHeaders(array $headers)
+    {
+        $this->constantHeaders = $headers;
+    }
+
 	public function setConstantParams(array $constantParams)
 	{
 		$this->constantParams = $constantParams;
@@ -81,6 +86,11 @@ class Client
 
 			$params['verify'] = false;
 		}
+
+        if (isset($this->constantHeaders)) {
+
+            $params['headers'] = $this->constantHeaders;
+        }
 
 		return $params;
 	}
