@@ -49,16 +49,21 @@ class Client
 		$this->errorCode = null;
 	}
 
-	private function makeCall($verb, $url, array $queryParams = null, array $formParams = null)
+	private function makeCall($verb, $url, array $queryParams = null, array $formParams = null, array $multipart = null)
 	{
 		$this->initError();
 
 		$url = $this->makeURL($url, $queryParams);
 		$params = [];
-		if (isset($formParams)) {
+		if (isset($formParams) && !empty($formParams)) {
 
 			$params['json'] = $formParams;
 		}
+
+        if (isset($multipart)  && !empty($multipart)) {
+
+            $params['multipart'] = $multipart;
+        }
 
 		$params = $this->addParams($params);
 
@@ -109,9 +114,9 @@ class Client
 		return $this->makeCall('GET', $url, $queryParams);
 	}
 
-	public function post($url, array $formParams, array $queryParams = null)
+	public function post($url, array $formParams, array $queryParams = null, array $multipart = null)
 	{
-		return $this->makeCall('POST', $url, $queryParams, $formParams);
+		return $this->makeCall('POST', $url, $queryParams, $formParams, $multipart);
 	}
 
 	public function put($url, array $formParams, array $queryParams = null)
