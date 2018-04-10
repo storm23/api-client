@@ -25,7 +25,10 @@ class Client
 	public function __construct($endpoint, $verifySSL = true)
 	{
 		$this->endpoint = $endpoint;
-		$headers = ['headers' => ['Content-Type' => 'application/json']];
+		$headers = ['headers' =>
+                        ['Accept' => 'application/json'],
+                        ['Content-Type' => 'application/json']
+                    ];
 		$this->httpClient = new GuzzleClient($headers);
 		$this->verifySSL = $verifySSL;
 
