@@ -76,8 +76,16 @@ class Client
 		}
 		catch (RequestException $e) {
 
-            $this->addError($e->getResponse()->getStatusCode(), $e->getResponse()->getBody()->getContents());
-			$response = false;
+            if ($e->getResponse() == null) {
+
+                $this->addError(500, $e->getMessage());
+                $response = false;
+            }
+            else {
+
+                $this->addError($e->getResponse()->getStatusCode(), $e->getResponse()->getBody()->getContents());
+    			$response = false;
+            }
 		}
 		catch (TransferException $e) {
 
