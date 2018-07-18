@@ -18,6 +18,7 @@ class Client
 	private $constantParams;
 	private $endpoint;
 	private $verifySSL;
+    private $timeout = 0;
 
 	public $errors;
 	public $hasError;
@@ -44,6 +45,11 @@ class Client
 	{
 		$this->constantParams = $constantParams;
 	}
+
+    public function setTimeout($timeout)
+    {
+        $this->timeout = $timeout;
+    }
 
 	private function initError()
 	{
@@ -106,6 +112,11 @@ class Client
         if (isset($this->constantHeaders)) {
 
             $params['headers'] = $this->constantHeaders;
+        }
+
+        if ($this->timeout > 0) {
+
+            $params['timeout'] = $this->timeout;
         }
 
 		return $params;
